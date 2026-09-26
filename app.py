@@ -194,6 +194,11 @@ def show_compliance_lookup(api_key: str):
 
     # Validate inputs
     if st.button("🔎 Get Compliance Info", type="primary", use_container_width=True):
+        # Strip whitespace from inputs
+        product_id = product_id.strip()
+        source_country = source_country.strip()
+        destination_country = destination_country.strip()
+
         # Validate inputs
         is_valid_pid, pid_error = validate_product_id(product_id)
         if not is_valid_pid:
@@ -267,7 +272,7 @@ def show_product_search():
     if search_type == "Product ID":
         product_id = st.text_input("Enter Product ID:")
         if product_id:
-            product = get_product_by_id(product_id)
+            product = get_product_by_id(product_id.strip())
             if product:
                 st.subheader("Product Found")
                 st.markdown(format_product_display(product))
@@ -277,7 +282,7 @@ def show_product_search():
     elif search_type == "Product Name":
         product_name = st.text_input("Enter Product Name (or partial name):")
         if product_name:
-            results = search_products(product_name)
+            results = search_products(product_name.strip())
             if results:
                 st.subheader(f"Found {len(results)} product(s)")
                 for product in results:
@@ -292,7 +297,7 @@ def show_product_search():
     elif search_type == "Category":
         category = st.text_input("Enter Category:")
         if category:
-            results = search_products(category)
+            results = search_products(category.strip())
             if results:
                 st.subheader(f"Found {len(results)} product(s)")
                 for product in results:
