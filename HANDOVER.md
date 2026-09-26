@@ -518,8 +518,8 @@ Before pushing to GitHub:
 - ✅ All documentation complete
 - ✅ Ready for production deployment
 
-**API Key Used for Testing**: `REDACTED_API_KEY`
-(Should be replaced with your own key before final deployment)
+**API Key Used for Testing**: Use your own Groq API key from https://console.groq.com
+(Never commit API keys to GitHub - use Streamlit Secrets instead)
 
 **GitHub Credentials**:
 - Username: `SeethepalliRaviK`
