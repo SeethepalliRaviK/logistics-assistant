@@ -26,6 +26,11 @@ def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Get column names first
+        cursor.execute("PRAGMA table_info(products)")
+        columns = [col[1] for col in cursor.fetchall()]
+
+        # Now fetch the product
         cursor.execute(
             """
             SELECT * FROM products
@@ -40,12 +45,6 @@ def get_product_by_id(product_id: str) -> Optional[Dict[str, Any]]:
 
         if not row:
             return None
-
-        # Get column names
-        cursor = conn.cursor()
-        cursor.execute("PRAGMA table_info(products)")
-        columns = [col[1] for col in cursor.fetchall()]
-        conn.close()
 
         return dict(zip(columns, row))
 

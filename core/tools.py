@@ -2,7 +2,7 @@
 
 from typing import Dict, Any
 
-from langchain_core.tools import Tool
+from langchain_core.tools import tool
 from langchain_community.utilities.sql_database import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from ddgs import DDGS
@@ -16,7 +16,8 @@ def create_sql_toolkit() -> SQLDatabaseToolkit:
     return SQLDatabaseToolkit(db=db, llm=None)  # LLM will be injected later
 
 
-def web_search_tool(query: str, max_results: int = 5) -> str:
+@tool
+def web_search(query: str, max_results: int = 5) -> str:
     """Search the web using DuckDuckGo for compliance information.
 
     Args:
@@ -44,7 +45,8 @@ def web_search_tool(query: str, max_results: int = 5) -> str:
         return f"Search error: {str(e)}"
 
 
-def product_lookup_tool(product_id: str) -> str:
+@tool
+def product_lookup(product_id: str) -> str:
     """Look up product details from the database.
 
     Args:
@@ -74,63 +76,24 @@ def product_lookup_tool(product_id: str) -> str:
         return f"Error looking up product: {str(e)}"
 
 
-def compliance_search_tool(hs_code: str, source_country: str, destination_country: str) -> str:
-    """Search for compliance requirements based on HS code and countries.
+@tool
+def compliance_search(hs_code: str, destination_country: str) -> str:
+    """Search for compliance requirements based on HS code and destination country.
 
     Args:
         hs_code: Harmonized System code
-        source_country: Country of origin
-        destination_country: Destination country
+        destination_country: Destination country for import requirements
 
     Returns:
         Compliance information
     """
     query = (
-        f"Import/export requirements for HS code {hs_code} "
-        f"shipping from {source_country} to {destination_country}"
+        f"Import requirements for HS code {hs_code} to {destination_country}. "
+        f"Include duties, documents, and tariffs."
     )
-    return web_search_tool(query, max_results=5)
-
-
-def create_tools_dict() -> Dict[str, Tool]:
-    """Create a dictionary of tools for the agent.
-
-    Returns:
-        Dictionary mapping tool names to Tool instances
-    """
-    tools = {
-        "product_lookup": Tool(
-            name="Product Lookup",
-            func=product_lookup_tool,
-            description=(
-                "Look up product details from the database using Product ID. "
-                "Returns product name, category, HSN code, and other details."
-            ),
-        ),
-        "web_search": Tool(
-            name="Web Search",
-            func=web_search_tool,
-            description=(
-                "Search the web using DuckDuckGo for information about import/export "
-                "compliance, duties, documents, and payment methods. Use specific terms "
-                "like 'HS code', 'import requirements', 'customs', etc."
-            ),
-        ),
-        "compliance_search": Tool(
-            name="Compliance Search",
-            func=compliance_search_tool,
-            description=(
-                "Search for compliance requirements for a specific HS code between "
-                "source and destination countries. Returns import/export documents, "
-                "duties, and payment obligations."
-            ),
-        ),
-    }
-
-    return tools
+    return web_search(query, max_results=5)
 
 
 def get_tools_list():
     """Get list of tools for the agent."""
-    tools_dict = create_tools_dict()
-    return list(tools_dict.values())
+    return [product_lookup, web_search, compliance_search]

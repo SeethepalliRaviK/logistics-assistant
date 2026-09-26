@@ -4,6 +4,7 @@ from typing import Optional
 
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
 
 from core.groq_client import create_llm, safe_llm_call
 from core.tools import get_tools_list
@@ -41,10 +42,12 @@ def create_compliance_agent(groq_api_key: str):
     llm = create_llm(groq_api_key)
     tools = get_tools_list()
 
+    # Bind system prompt to the model
+    model_with_system = llm.bind(system=SYSTEM_PROMPT)
+
     agent_executor = create_react_agent(
-        model=llm,
+        model=model_with_system,
         tools=tools,
-        state_modifier=SYSTEM_PROMPT,
         debug=False,
     )
 
@@ -105,10 +108,10 @@ def simple_compliance_lookup(groq_api_key: str, product_id: str,
         Compliance information
     """
     from core.database import execute_query
-    from core.tools import product_lookup_tool, compliance_search_tool
+    from core.tools import product_lookup, compliance_search
 
     # Step 1: Look up product
-    product_info = product_lookup_tool(product_id)
+    product_info = product_lookup(product_id)
 
     if "not found" in product_info.lower():
         return product_info
@@ -127,9 +130,9 @@ def simple_compliance_lookup(groq_api_key: str, product_id: str,
 
     # Step 3: Search compliance requirements
     if hs_code:
-        compliance_info = compliance_search_tool(hs_code, source_country, destination_country)
+        compliance_info = compliance_search(hs_code, destination_country)
     else:
-        compliance_info = compliance_search_tool(product_id, source_country, destination_country)
+        compliance_info = compliance_search(product_id, destination_country)
 
     # Combine results
     return f"Product Information:\n{product_info}\n\n" \
