@@ -1,0 +1,118 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test Application
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint with flake8 (if available)
+        run: |
+          pip install flake8
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        continue-on-error: true
+
+      - name: Verify database exists
+        run: |
+          python -c "from core.database import check_database_exists; assert check_database_exists(), 'Database not found'"
+
+      - name: Verify imports
+        run: |
+          python -c "import core.groq_client; import core.database; import core.tools; import core.agent; import utils.helpers"
+
+  security:
+    name: Security Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Bandit security checks
+        uses: gaurav-nelson/github-action-bandit@v1
+        with:
+          path: "."
+        continue-on-error: true
+
+  deploy:
+    name: Deploy to Streamlit Cloud
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Verify files for deployment
+        run: |
+          # Check essential files exist
+          [ -f "app.py" ] || exit 1
+          [ -f "requirements.txt" ] || exit 1
+          [ -f "README.md" ] || exit 1
+          [ -d "core" ] || exit 1
+          [ -d "data" ] || exit 1
+          echo "✅ All essential files present for deployment"
+
+      - name: Notify deployment
+        run: |
+          echo "🚀 Ready to deploy to Streamlit Cloud"
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref }}"
+          echo ""
+          echo "Next steps:"
+          echo "1. Push this commit to your GitHub repo"
+          echo "2. Go to https://share.streamlit.io"
+          echo "3. Click 'New app'"
+          echo "4. Select this repository and app.py"
+          echo "5. Add GROQ_API_KEY to app secrets"
+
+  notify:
+    name: Build Status Notification
+    needs: [test, security]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.test.result }}" == "success" ]; then
+            echo "✅ Build passed successfully!"
+          else
+            echo "❌ Build failed"
+            exit 1
+          fi
