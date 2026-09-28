@@ -286,7 +286,6 @@ Status: Within safe limits
 **Repository:** https://github.com/SeethepalliRaviK/logistics-assistant
 
 ```
-Commit: 651cebe
 Message: "fix: Resolve critical bugs in database, agent, and tools"
 
 Changes:

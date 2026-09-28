@@ -4,8 +4,10 @@
 
 **GitHub:**
 - **Username**: `SeethepalliRaviK`
-- **Email**: `SeethepalliRaviK@users.noreply.github.com`
 - **Already Configured**: ✅ Yes (in git config)
+
+> **Note:** never write a personal email address into a tracked file. Git also records it in the
+> author field of every commit, so use a GitHub `noreply` address if you want it kept private.
 
 ---
 

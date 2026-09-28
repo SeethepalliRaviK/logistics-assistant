@@ -243,8 +243,8 @@ If this session breaks and you need to resume:
 
 ### 1. Check Current State
 ```bash
-cd "E:\Ravi\learning\REDACTED\bridge course\Advanced Generative AI for Natural Language Processing\Week 2\week 2-guided activity\MLS-2"
-git log --oneline  # Should show 5 commits
+# Run from the project root (the folder containing app.py)
+git log --oneline  # Should list the project commits
 python -m pytest tests/ -q  # Should show 87 tests collected
 ```
 
@@ -456,7 +456,7 @@ Before pushing to GitHub:
 - [ ] No API keys in code: `git log -p | grep -i "gsk_"` (empty)
 - [ ] Requirements.txt updated: `pip freeze > requirements.txt` (optional)
 - [ ] Git status clean: `git status` (nothing to commit)
-- [ ] Commits are clean: `git log --oneline` (5 commits visible)
+- [ ] Commits are clean: `git log --oneline` (commit list looks sensible)
 
 ---
 
@@ -523,7 +523,7 @@ Before pushing to GitHub:
 
 **GitHub Credentials**:
 - Username: `SeethepalliRaviK`
-- Email: `SeethepalliRaviK@users.noreply.github.com`
+- (Email intentionally not recorded here — use a GitHub `noreply` address for public repos)
 
 ---
 

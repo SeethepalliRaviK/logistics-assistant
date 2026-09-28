@@ -7,8 +7,8 @@ echo PUSHING TO GITHUB - LOGISTICS ASSISTANT
 echo ============================================================
 echo.
 
-REM Navigate to project directory
-cd /d "E:\Ravi\learning\REDACTED\bridge course\Advanced Generative AI for Natural Language Processing\Week 2\week 2-guided activity\MLS-2"
+REM Navigate to the directory containing this script (portable - no hardcoded paths)
+cd /d "%~dp0"
 
 REM Add remote (only if not already added)
 git remote remove origin 2>nul

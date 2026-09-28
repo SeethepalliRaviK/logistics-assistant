@@ -7,6 +7,10 @@
 .env.local
 .env.*.local
 
+# Agent/assistant working files (may contain local notes, never publish)
+.workbuddy-ai/
+.claude/
+
 # Python
 __pycache__/
 *.py[cod]

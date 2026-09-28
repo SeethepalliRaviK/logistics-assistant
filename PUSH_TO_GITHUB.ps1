@@ -6,8 +6,8 @@ Write-Host "PUSHING TO GITHUB - LOGISTICS ASSISTANT" -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Navigate to project directory
-Set-Location "E:\Ravi\learning\REDACTED\bridge course\Advanced Generative AI for Natural Language Processing\Week 2\week 2-guided activity\MLS-2"
+# Navigate to the directory containing this script (portable - no hardcoded paths)
+Set-Location $PSScriptRoot
 
 # Configure git remote
 Write-Host "Setting up GitHub remote..." -ForegroundColor Yellow

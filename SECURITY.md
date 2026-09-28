@@ -4,9 +4,12 @@
 
 Based on your git configuration:
 - **GitHub Username**: `SeethepalliRaviK`
-- **Email**: `SeethepalliRaviK@users.noreply.github.com`
 
-**⚠️ Never share these credentials or your API keys publicly!**
+**⚠️ Never share your credentials or your API keys publicly!**
+
+> **Note:** a personal email address should never be written into a tracked file. Git records it
+> in the author field of every commit as well, so configure a GitHub `noreply` address if you
+> want it kept private.
 
 ---
 
